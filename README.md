@@ -1,6 +1,9 @@
 # InfiltrationEngine Custom Missions
 This repository contains tooling and templates for the InfiltrationEngine games, better known as Entry Point: Freelancer's Cut and Operators
 
+A more complete guide for this system can be found here, courtesy of GhfjSpero:
+https://docs.google.com/document/d/1LAvisY11Fq8_jbyoq5iz7pWnZoSETy429hJYfsEwdP0
+
 Mission templates and prop models provided in this repo are licensed under Creative Commons Attribution-NonCommercial-ShareAlike license (https://creativecommons.org/licenses/by-nc-sa/4.0/). Generally, this means is that you're free to create and share derivative works for non-commercial purposes as long as they are distributed under the same license.
 
 ## Quick Start
