@@ -1661,6 +1661,8 @@ local State = Actor.State
 local Derived = Actor.Derived
 local DerivedTable = Actor.DerivedTable
 
+local CustomPropsFolder = State(false)
+
 local module = {}
 
 local ColorMap = {}
@@ -1728,10 +1730,11 @@ function module:AddProp(basePart)
 		return
 	end
 	
-	if ModelFolder and ModelFolder:FindFirstChild(basePart.Name) then
+	local storedModel = CustomPropsFolder._Value and CustomPropsFolder._Value:FindFirstChild(basePart.Name) or ModelFolder and ModelFolder:FindFirstChild(basePart.Name)
+	if storedModel then
 		basePart.Transparency = 1
 		
-		local model = ModelFolder[basePart.Name]:Clone()
+		local model = storedModel:Clone()
 		for _, p in pairs(model:GetDescendants()) do
 			if p:IsA("BasePart") then
 				p.Archivable = false
@@ -1828,7 +1831,7 @@ function module:SetEnabled()
 end
 
 local SearchText = State("")
-local SearchResults = Derived(function(text)
+local SearchResults = Derived(function(text, customProps)
 	local list = {}
 	if ModelFolder then
 		for _, item in pairs(ModelFolder:GetChildren()) do
@@ -1836,9 +1839,16 @@ local SearchResults = Derived(function(text)
 				table.insert(list, item.Name)
 			end
 		end
+		if customProps then
+			for _, item in customProps:GetChildren() do
+				if not ModelFolder:FindFirstChild(item.Name) and string.lower(item.Name):match(string.lower(text)) then
+					table.insert(list, item.Name)
+				end	
+			end
+		end
 	end
 	return list
-end, SearchText)
+end, SearchText, CustomPropsFolder)
 
 function module:SetDisabled()
 	if not self.Enabled then return end
@@ -1862,6 +1872,8 @@ end
 module.Init = function(mouse: PluginMouse)
 	if module.Active then return end
 	module.Active = true
+	
+	CustomPropsFolder:set(workspace:FindFirstChild("DebugMission") and workspace.DebugMission:FindFirstChild("CustomProps") or false)
 	
 	local searchBox
 	searchBox = Create("TextBox", {
@@ -1914,7 +1926,8 @@ module.Init = function(mouse: PluginMouse)
 					Text = value,
 					Enabled = State(false),
 					Activated = function()
-						local base = ModelFolder[value] and ModelFolder[value]:FindFirstChild("Base")
+						local model = CustomPropsFolder._Value and CustomPropsFolder._Value:FindFirstChild(value) or ModelFolder[value]
+						local base = model and model:FindFirstChild("Base")
 						if base then 
 							local prop = base:Clone()
 							prop.Name = value
