@@ -754,6 +754,7 @@ return {
 		ItemTagString = {AttributeType.STATE_VALUE, ""},
 	},
 	LootWeapons = {
+		ItemTagString = {AttributeType.STRING, ""},
 	},
 	LowVent = {
 		Blocked = {AttributeType.EXPRESSION, ""},
