@@ -3513,6 +3513,18 @@ module.Init = function(mouse: PluginMouse)
 				end
 				local code = Write.Mission(mission)
 
+				--[[
+					Attempt at a fix for linux, tried putting it in a single line and to do so, tried removing comments
+					The issue might be that when even a whitespace character gets deleted, the integrity/tamper check finds it modified and doesn't accept it
+					By linux I mean Sober, an utility allowing linux users to use roblox, though because of the utility text gets somehow pasted in differently in terms of whitespaces, pasting in does include \n (newlines) so its not a syntax error
+				]]--
+				--code = string.gsub(code, "%-%-%~", "HorribleWayOfCodingThisINHonestly")
+				--code = string.gsub(code, "%-%-%[%[.-%]%]", "")
+				--code = string.gsub(code, "%-%-.-\n", "")
+				--code = string.gsub(code, "HorribleWayOfCodingThisINHonestly", "--~")
+				--code = string.gsub(code, "\t", "")
+				--code = string.gsub(code, "\n", " \n")
+
 				if not workspace:FindFirstChild("DebugMission") then
 					local model = Read.Mission(code, 1)
 					model.Parent = workspace
