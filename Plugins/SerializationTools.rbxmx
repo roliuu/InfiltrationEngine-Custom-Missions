@@ -32,7 +32,7 @@ local GlobalPropAttributes = {
 	StaticTag = { PropAttributeTypes.STRING, nil },
 	HasTopBarrier = { PropAttributeTypes.OPTIONAL_BOOL, nil },
 	Indestructible = { PropAttributeTypes.EXPRESSION, nil },
-	IsSpawned = { PropAttributeTypes.STATE_VALUE, nil },
+	IsSpawned = { PropAttributeTypes.EXPRESSION, nil },
 	Color0 = { PropAttributeTypes.OPTIONAL_MISSION_COLOR, nil },
 	Color1 = { PropAttributeTypes.OPTIONAL_MISSION_COLOR, nil },
 	Color2 = { PropAttributeTypes.OPTIONAL_MISSION_COLOR, nil },
@@ -3488,7 +3488,7 @@ module.Init = function(mouse: PluginMouse)
 			prePaste = prePaste .. Write.ShortInt(mapId)
 			prePaste = prePaste .. Write.ShortInt(currentPaste)
 			prePaste = prePaste .. Write.ShortInt(maxPastes)
-			codeChunks[#codeChunks + 1] = prePaste .. code:sub(first, current)
+			codeChunks[#codeChunks + 1] = prePaste .. code:sub(first, current) .. "\r"
 			first += PASTE_SIZE
 			current += PASTE_SIZE
 			currentPaste += 1
@@ -3537,18 +3537,6 @@ module.Init = function(mouse: PluginMouse)
 						)
 					end
 					local code = Write.Mission(mission)
-
-					--[[
-					Attempt at a fix for linux, tried putting it in a single line and to do so, tried removing comments
-					The issue might be that when even a whitespace character gets deleted, the integrity/tamper check finds it modified and doesn't accept it
-					By linux I mean Sober, an utility allowing linux users to use roblox, though because of the utility text gets somehow pasted in differently in terms of whitespaces, pasting in does include \n (newlines) so its not a syntax error
-					]]--
-					--code = string.gsub(code, "%-%-%~", "98137837fgbgui4bgiu43")
-					--code = string.gsub(code, "%-%-%[%[.-%]%]", "")
-					--code = string.gsub(code, "%-%-.-\n", "")
-					--code = string.gsub(code, "98137837fgbgui4bgiu43", "--~")
-					--code = string.gsub(code, "\t", "")
-					--code = string.gsub(code, "\n", " \n")
 
 					if not workspace:FindFirstChild("DebugMission") then
 						local model = Read.Mission(code, 1)
