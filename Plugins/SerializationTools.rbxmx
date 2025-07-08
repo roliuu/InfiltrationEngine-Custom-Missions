@@ -258,59 +258,74 @@ return {
 		local name = className == "BoolValue" and attributes.Type or instanceName
 		if not AttributesMap[name] then
 			return attributes -- If not included in the prop list, just return the normal attributes list
-		else
-			local newAttributes = {}
-			local attributeTypes = AttributesMap[name]
-			for attName, tableOfInfo in pairs(attributeTypes) do -- add attributes specifically listed in AttributesMap.lua
-				if not attributes[attName] then
-					if includeDefaults then
-						newAttributes[attName] = tableOfInfo[2]
-					end
+		end
+		
+		local newAttributes = {}
+		local attributeTypes = AttributesMap[name]
+		
+		--for attribute, value in pairs(attributes) do
+		--	if not attributeTypes[attribute] then
+		--		if attribute == "ClientVisible" and name == "SearchableFile" then 
+		--			-- correcting grammatically correct attributes, assumes the user didn't put both the correct and incorrect version
+		--			warn(`Attribute type mistyped: {attribute} {name}, should be named {"ClientVisisble"}`)
+		--			attributes["ClientVisisble"] = value
+		--			print(attributes)
+		--		end
+		--	end
+		--end
+		
+		for attName, tableOfInfo in pairs(attributeTypes) do -- add attributes specifically listed in AttributesMap.lua
+			if not attributes[attName] then
+				if includeDefaults then
+					newAttributes[attName] = tableOfInfo[2]
+				end
+				continue
+			end
+			local givenValue = attributes[attName]
+			local attributeTypeName = ""
+			for i, v in pairs(PropAttributeTypes) do
+				if tableOfInfo[1] == v then
+					attributeTypeName = i
+				end
+			end
+			if attributeTypeName == "" then
+				error(`attribute type does not exist: {name} {attName}`)
+			end
+			if not testAttributeCompatibility(attributeTypeName, givenValue, name, attName) then
+				if includeDefaults then
+					newAttributes[attName] = attributeTypes[attName][2]
+				else
 					continue
 				end
-				local givenValue = attributes[attName]
+			end
+			-- If the value isn't default or is and the includeDefaults value is set to true, then add it to the list
+			if (tableOfInfo[2] == givenValue and includeDefaults) or tableOfInfo[2] ~= givenValue then
+				newAttributes[attName] = givenValue
+			end
+		end
+		for attribute, value in pairs(attributes) do -- add the remaining attributes that are defined in the global attributes table above
+			--if (attribute == "ClientVisible" and name == "SearchableFile") then
+			--	attribute = "ClientVisisble"
+			--end
+			if GlobalPropAttributes[attribute] then
+				local tableOfInfo = GlobalPropAttributes[attribute]
 				local attributeTypeName = ""
 				for i, v in pairs(PropAttributeTypes) do
 					if tableOfInfo[1] == v then
 						attributeTypeName = i
 					end
 				end
-				if attributeTypeName == "" then
-					error(`attribute type does not exist: {name} {attName}`)
+				if testAttributeCompatibility(attributeTypeName, value, name, attribute) then
+					newAttributes[attribute] = value
+				else
+					newAttributes[attribute] = nil -- set to nil if it doesn't fit properly
 				end
-				if not testAttributeCompatibility(attributeTypeName, givenValue, name, attName) then
-					if includeDefaults then
-						newAttributes[attName] = attributeTypes[attName][2]
-					else
-						continue
-					end
-				end
-				-- If the value isn't default or is and the includeDefaults value is set to true, then add it to the list
-				if (tableOfInfo[2] == givenValue and includeDefaults) or tableOfInfo[2] ~= givenValue then
-					newAttributes[attName] = givenValue
-				end
+			elseif not attributeTypes[attribute] then
+				warn("Unknown attribute will be discarded:", attribute, name)
 			end
-			for attribute, value in pairs(attributes) do -- add the remaining attributes that are defined in the global attributes table above
-				if GlobalPropAttributes[attribute] then
-					local tableOfInfo = GlobalPropAttributes[attribute]
-					local attributeTypeName = ""
-					for i, v in pairs(PropAttributeTypes) do
-						if tableOfInfo[1] == v then
-							attributeTypeName = i
-						end
-					end
-					if testAttributeCompatibility(attributeTypeName, value, name, attribute) then
-						newAttributes[attribute] = value
-					else
-						newAttributes[attribute] = nil -- set to nil if it doesn't fit properly
-					end
-				elseif not attributeTypes[attribute] then
-					warn("Unknown attribute will be discarded:", attribute, name)
-				end
-			end
-
-			return newAttributes
 		end
+
+		return newAttributes
 	end,
 }]]></ProtectedString>
 				<int64 name="SourceAssetId">-1</int64>
@@ -1130,7 +1145,7 @@ return {
 		TitleKey = {AttributeType.STRING, ""},
 		SubtitleKey = {AttributeType.STRING, ""},
 		ServerVisible = {AttributeType.EXPRESSION, ""},
-		ClientVisisble = {AttributeType.EXPRESSION, ""},
+		ClientVisible = {AttributeType.EXPRESSION, ""},
 		ServerEnabled = {AttributeType.EXPRESSION, ""},
 		HoldTime = {AttributeType.NUMBER, 2},
 		HoldAlert = {AttributeType.EXPRESSION, ""},
