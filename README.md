@@ -1,5 +1,5 @@
 # Modified SerializationTools.rbxmx fixing bugs and unadded attributes
-I will not report those issues to Morgan, due to them possibly being too minor. Don't want to annoy them again, so here is a modification of the tool for use for anyone
+I will not report those issues to Morgan, due to those issues possibly being too minor. Don't want to annoy them again, so here is a modification of the tool for use for anyone
 
 # InfiltrationEngine Custom Missions
 This repository contains tooling and templates for the InfiltrationEngine games, better known as Entry Point: Freelancer's Cut and Operators
